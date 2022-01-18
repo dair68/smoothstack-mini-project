@@ -65,7 +65,6 @@ logging.basicConfig(filename="log.log", level=logging.DEBUG,
 if monthSummary == ():
     print("Error: Month not found in Summary Rolling MoM sheet")
     logging.error("Month not found in Summary Rolling MoM sheet")
-    sys.exit()
     
 #print(monthSummary)
 headers = ["date", "callsOffered", "Abandon after 30s", "FCR", "DSAT", "CSAT"]
@@ -114,7 +113,6 @@ for n in range(len(colHeaders)):
 if col == 0:
     print("Error: Month not found in VOC Rolling MoM sheet")
     logging.error("Month not found in VOC Rolling MoM sheet")
-    sys.exit()
         
 rowHeaders = ["nps", "base size", "promoters", "passives", "dectractors", 
               "Overall NPS %", "AARP Total", "Sat with Agent %", "AARP Total",
