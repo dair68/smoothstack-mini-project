@@ -36,7 +36,7 @@ while True:
                 month = m.lower()
                 break
             
-        year = re.findall(r"\d{4}", f)[0]
+        year = int(re.findall(r"\d{4}", f)[0])
         print(year)
         
         #found month in filename
@@ -47,6 +47,7 @@ while True:
 
 summaryRolling = wb["Summary Rolling MoM"]
 monthSummary = ()
+print(year)
 
 #finding row containing data for month contained in filename
 for row in summaryRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
@@ -82,8 +83,28 @@ logging.info("CSAT: %.2f%%", monthData["csat"]*100)
 vocRolling = wb["VOC Rolling MoM"]
 print(vocRolling)
 
-for row in vocRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
-                                    values_only = True):
-    print(row)
+#for row in vocRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
+#                                    values_only = True):
+#    print(row)
+    
+colHeaders = vocRolling[1]
+#for header in colHeaders:
+#    print(header.value) 
 
+col = 0
+
+#searching for column with correct month and year
+for n in range(len(colHeaders)):
+    #found date
+    if isinstance(colHeaders[n].value, datetime.date):
+        headerDate = colHeaders[n].value
+        headerMonth = headerDate.strftime("%B").lower()
+    
+        #found date and year in filename
+        if headerMonth == month and headerDate.year == year:
+            col = n
+            break
+    
+    
+print(col)
 wb.close()
