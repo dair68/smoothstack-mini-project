@@ -104,7 +104,15 @@ for n in range(len(colHeaders)):
         if headerMonth == month and headerDate.year == year:
             col = n
             break
-    
-    
-print(col)
+        
+rowHeaders = ["nps", "base size", "promoters", "passives", "dectractors", 
+              "nps percent", "aarp total", "sat w/ agent percent", "aarp total",
+              "dsat w/ agent percent", "aarp total"]
+colData = [row[col] for row in vocRolling.iter_rows(values_only = True) 
+           if row[0] is not None]
+        
+print(rowHeaders)
+print(colData)
+
+
 wb.close()
