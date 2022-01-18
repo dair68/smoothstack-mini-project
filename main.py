@@ -8,7 +8,7 @@ Created on Sun Jan 16 15:36:16 2022
 import csv
 from logging import Logger
 from openpyxl import Workbook, load_workbook
-import sys
+import datetime
 
 months = ["january", "february", "march", "april", "may", "june", "july", 
           "august", "september", "october", "november", "december"]
@@ -19,7 +19,7 @@ wb = Workbook()
 while True:
     try:
         f = input("Input filename (.xlsx, .xlsm, .xltx, or .xltm file required): \n")
-        #f = "expedia_report_monthly_janusary_2018.xlsx"
+        #f = "expedia_report_monthly_january_2018.xlsx"
         #f = "expedia_report_monthly_march_2018.xlsx"
         wb = load_workbook(filename=f, read_only = True)
     except FileNotFoundError:
@@ -40,15 +40,22 @@ while True:
         else:
             print("Can't find month in filename")
 
-ws = wb["Summary Rolling MoM"]
-print(ws)
+summaryRolling = wb["Summary Rolling MoM"]
+monthSummary = ()
+
+#finding row containing data for month contained in filename
+for row in summaryRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
+                                    values_only = True):
+    #verifying leftmost column has a date
+    if isinstance(row[0], datetime.date): 
+        date = row[0]
+        print(date)
+        print(type(date))
         
+        #found row corresponding to month in filename
+        if date.strftime("%B").lower() == month:
+            monthSummary = row
+            break
     
-#found no month in filename
-if month == "":
-    print("Error: month not found in file name")
-    wb.close()
-    sys.exit()
-    
-print(m)    
+print(monthSummary)
 wb.close()
