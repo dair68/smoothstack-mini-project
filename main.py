@@ -20,8 +20,8 @@ wb = Workbook()
 #letting user type in file names until they successfully open xl file
 while True:
     try:
-        #f = input("Input filename (.xlsx, .xlsm, .xltx, or .xltm file required): \n")
-        f = "expedia_report_monthly_january_2018.xlsx"
+        f = input("Input filename (.xlsx, .xlsm, .xltx, or .xltm file required): \n")
+        #f = "expedia_report_monthly_january_2018.xlsx"
         #f = "expedia_report_monthly_march_2018.xlsx"
         wb = load_workbook(filename=f, read_only = True)
     except FileNotFoundError:
@@ -37,7 +37,7 @@ while True:
                 break
             
         year = int(re.findall(r"\d{4}", f)[0])
-        print(year)
+        #print(year)
         
         #found month in filename
         if month != "" and year != 0:
@@ -47,7 +47,7 @@ while True:
 
 summaryRolling = wb["Summary Rolling MoM"]
 monthSummary = ()
-print(year)
+#print(year)
 
 #finding row containing data for month contained in filename
 for row in summaryRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
@@ -63,34 +63,26 @@ for row in summaryRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
             monthSummary = row
             break
     
-print(monthSummary)
-keys = ["date", "callsOffered", "abandon30s", "fcr", "dsat", "csat"]
-monthData = {keys[i]: monthSummary[i] for i in range(len(keys))}
-print(monthData)
-print(type(monthData["abandon30s"]))
+#print(monthSummary)
+headers = ["date", "callsOffered", "Abandon after 30s", "FCR", "DSAT", "CSAT"]
+monthData = [monthSummary[i] for i in range(len(headers))]
+#print(monthData)
 
 #logging all desired data from Summary Rolling MoM sheet
 logging.basicConfig(filename="log.log", level=logging.DEBUG,
                     format="[%(levelname)s] %(asctime)s - %(message)s")
-date = monthData["date"]
+date = monthData[0]
 logging.info("%s %s Report", date.strftime("%B"), str(date.year))
-logging.info("Calls Offered: %s", monthData["callsOffered"])
-logging.info("Abandon after 30s: %.2f%%", monthData["abandon30s"]*100)
-logging.info("FCR: %.2f%%", monthData["fcr"]*100)
-logging.info("DSAT: %.2f%%", monthData["dsat"]*100)
-logging.info("CSAT: %.2f%%", monthData["csat"]*100)
+logging.info("Calls Offered: %s", monthData[1])
+
+#logging next few statistics all percentages
+for i in range(2, len(headers)):
+    logging.info("%s: %s%%", headers[i], monthData[i]*100)
+
 
 vocRolling = wb["VOC Rolling MoM"]
-print(vocRolling)
-
-#for row in vocRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
-#                                    values_only = True):
-#    print(row)
-    
+#print(vocRolling)
 colHeaders = vocRolling[1]
-#for header in colHeaders:
-#    print(header.value) 
-
 col = 0
 
 #searching for column with correct month and year
@@ -106,13 +98,38 @@ for n in range(len(colHeaders)):
             break
         
 rowHeaders = ["nps", "base size", "promoters", "passives", "dectractors", 
-              "nps percent", "aarp total", "sat w/ agent percent", "aarp total",
-              "dsat w/ agent percent", "aarp total"]
+              "Overall NPS %", "AARP Total", "Sat with Agent %", "AARP Total",
+              "DSAT with Agent %", "AARP Total"]
 colData = [row[col] for row in vocRolling.iter_rows(values_only = True) 
            if row[0] is not None]
-        
-print(rowHeaders)
-print(colData)
 
+logging.info("Net promoter score: %s", colData[0])      
+logging.info("Base size: %s", colData[1])
 
+#>=200 promoters good, <200 bad
+if colData[2] >= 200:
+    logging.info("Promoters: good")
+else:
+    logging.info("Promoters: bad")
+    
+#>=100 passives good, <100 bad
+if colData[3] >= 100:
+    logging.info("Passives: good")
+else:
+    logging.info("Passives: bad")
+    
+#>=100 detractors good, <100 bad
+if colData[4] >= 100:
+    logging.info("Detractors: good")
+else:
+    logging.info("Detractors: bad")
+    
+#logging rest of column data as percentages
+for i in range(5, len(rowHeaders)):
+    #column contains value
+    if colData[i] is not None:
+        logging.info("%s: %s%%", rowHeaders[i], colData[i]*100)
+    else:
+        logging.info("%s: %s", rowHeaders[i], colData[i])
+    
 wb.close()
