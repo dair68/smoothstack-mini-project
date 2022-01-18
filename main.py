@@ -5,16 +5,13 @@ Created on Sun Jan 16 15:36:16 2022
 @author: Grant Huang
 """
 
-import csv
 import logging
 from openpyxl import Workbook, load_workbook
 import datetime
-import re
 
 months = ["january", "february", "march", "april", "may", "june", "july", 
           "august", "september", "october", "november", "december"]
 month = ""
-year = 0
 wb = Workbook()
 
 #letting user type in file names until they successfully open xl file
@@ -35,12 +32,9 @@ while True:
             if f.find(m.lower()) != -1:
                 month = m.lower()
                 break
-            
-        year = int(re.findall(r"\d{4}", f)[0])
-        #print(year)
         
         #found month in filename
-        if month != "" and year != 0:
+        if month != "":
             break
         else:
             print("Can't find month and/or year in filename")
@@ -93,7 +87,7 @@ for n in range(len(colHeaders)):
         headerMonth = headerDate.strftime("%B").lower()
     
         #found date and year in filename
-        if headerMonth == month and headerDate.year == year:
+        if headerMonth == month:
             col = n
             break
         
