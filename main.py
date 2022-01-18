@@ -8,7 +8,6 @@ Created on Sun Jan 16 15:36:16 2022
 import logging
 from openpyxl import Workbook, load_workbook
 import datetime
-import sys
 
 months = ["january", "february", "march", "april", "may", "june", "july", 
           "august", "september", "october", "november", "december"]
