@@ -81,13 +81,24 @@ col = 0
 
 #searching for column with correct month and year
 for n in range(len(colHeaders)):
-    #found date
-    if isinstance(colHeaders[n].value, datetime.date):
-        headerDate = colHeaders[n].value
-        headerMonth = headerDate.strftime("%B").lower()
+    headerDate = colHeaders[n].value
     
-        #found date and year in filename
+    #found date
+    if isinstance(headerDate, datetime.date):
+        headerMonth = headerDate.strftime("%B").lower()
+        #print(headerMonth)
+    
+        #found month in filename
         if headerMonth == month:
+            col = n
+            break
+    
+    #found string header
+    if type(headerDate) == str:
+        #print("string!")
+        
+        #found month
+        if headerDate.lower().find(month) != -1:
             col = n
             break
         
