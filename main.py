@@ -8,6 +8,7 @@ Created on Sun Jan 16 15:36:16 2022
 import logging
 from openpyxl import Workbook, load_workbook
 import datetime
+import sys
 
 months = ["january", "february", "march", "april", "may", "june", "july", 
           "august", "september", "october", "november", "december"]
@@ -56,15 +57,22 @@ for row in summaryRolling.iter_rows(min_row = 1, max_row = 14, max_col = 6,
         if date.strftime("%B").lower() == month:
             monthSummary = row
             break
+
+logging.basicConfig(filename="log.log", level=logging.DEBUG,
+                    format="[%(levelname)s] %(asctime)s - %(message)s")        
+        
+#couldn't find month in left column of sheet
+if monthSummary == ():
+    print("Error: Month not found in Summary Rolling MoM sheet")
+    logging.error("Month not found in Summary Rolling MoM sheet")
+    sys.exit()
     
 #print(monthSummary)
 headers = ["date", "callsOffered", "Abandon after 30s", "FCR", "DSAT", "CSAT"]
 monthData = [monthSummary[i] for i in range(len(headers))]
 #print(monthData)
 
-#logging all desired data from Summary Rolling MoM sheet
-logging.basicConfig(filename="log.log", level=logging.DEBUG,
-                    format="[%(levelname)s] %(asctime)s - %(message)s")
+
 date = monthData[0]
 logging.info("%s %s Report", date.strftime("%B"), str(date.year))
 logging.info("Calls Offered: %s", monthData[1])
@@ -101,6 +109,12 @@ for n in range(len(colHeaders)):
         if headerDate.lower().find(month) != -1:
             col = n
             break
+        
+#couldn't find column containing month
+if col == 0:
+    print("Error: Month not found in VOC Rolling MoM sheet")
+    logging.error("Month not found in VOC Rolling MoM sheet")
+    sys.exit()
         
 rowHeaders = ["nps", "base size", "promoters", "passives", "dectractors", 
               "Overall NPS %", "AARP Total", "Sat with Agent %", "AARP Total",
